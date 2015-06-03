@@ -41,10 +41,10 @@ public class PianoMainFrame {
 		allPanels = new AllPanels(this);
 		
 		frame.getContentPane().add(AllPanels.getWelcomePanel());
-		AllPanels.getWelcomePanel().setVisible(true);
+		AllPanels.getWelcomePanel().setVisible(false);
 		
 		frame.getContentPane().add(AllPanels.getPianoPanel());
-		AllPanels.getPianoPanel().setVisible(false);
+		AllPanels.getPianoPanel().setVisible(true);
 
 		
 	}
