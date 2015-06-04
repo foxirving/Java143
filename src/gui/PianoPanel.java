@@ -2,15 +2,23 @@ package gui;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 
+import javafx.scene.layout.Border;
+
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Desktop.Action;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,10 +31,15 @@ import javax.swing.JToolBar;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -36,6 +49,11 @@ import javax.swing.JToggleButton;
 
 import dataModel.PlaySound;
 
+import javax.swing.event.MenuKeyListener;
+import javax.swing.event.MenuKeyEvent;
+import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
+
 public class PianoPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
@@ -43,10 +61,8 @@ public class PianoPanel extends JPanel {
 	private static AllPanels panels;
 	private JTextField txtPianoPanel;
 	private JTextField txtRecording;
-	private JTextField txtOnOrOff;
 	private JMenuBar menuBar = new JMenuBar();
-	private JMenuItem openItem, saveAsItem,
-			QuitItem;
+	private JMenuItem openItem, saveAsItem, QuitItem;
 
 	// Nickle's variables
 
@@ -103,35 +119,45 @@ public class PianoPanel extends JPanel {
 
 		// add all buttons, labels, etc., to this JPanel(container)
 		JPanel container = new JPanel();
-		container.setBackground(new Color(102, 205, 170));
+		container.setBackground(new Color(128, 0, 0));
 		add(container, "containerOne");
 		container.setLayout(null);
 
 		// Menu Bar
 
 		JToolBar toolBar = new JToolBar();
-		toolBar.setBounds(0, 0, 800, 30);
+		toolBar.setEnabled(false);
+		toolBar.setFloatable(false);
+		toolBar.setRollover(true);
+		toolBar.setBackground(new Color(160, 82, 45));
+		toolBar.setBounds(0, 0, 800, 34);
 		container.add(toolBar);
 
 		JPanel menuPanel = new JPanel();
-		menuPanel.setBounds(0, 30, 800, 50);
+		menuPanel.setBackground(new Color(143, 188, 143));
+		menuPanel.setBounds(0, 34, 800, 45);
 		container.add(menuPanel);
 		menuPanel.setLayout(null);
 
 		JMenu fileMenu = new JMenu("File");
+		fileMenu.setBackground(new Color(128, 0, 0));
+		fileMenu.setBounds(0, 5, 50, 45);
 		JMenu elementMenu = new JMenu("Elements");
 		openItem = fileMenu.add("Open");
+
 		saveAsItem = fileMenu.add("Save As...");
 		fileMenu.addSeparator();
 		QuitItem = fileMenu.add("Quit");
 		ButtonGroup types = new ButtonGroup();
 		elementMenu.addSeparator();
+		menuBar.setBackground(new Color(245, 222, 179));
 		menuBar.add(fileMenu);
 		toolBar.add(menuBar);
 
 		// Menu Panel
 
 		btnStart = new JButton("Start");
+		btnStart.setBackground(new Color(245, 222, 179));
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (selected == 0) {
@@ -150,14 +176,18 @@ public class PianoPanel extends JPanel {
 				}
 			}
 		});
-		btnStart.setBounds(10, 11, 89, 23);
+		btnStart.setBounds(200, 0, 89, 23);
+		btnStart.setBorderPainted(false);
 		menuPanel.add(btnStart);
 
 		JButton btnPause = new JButton("pause");
-		btnPause.setBounds(109, 11, 89, 23);
+		btnPause.setBackground(new Color(245, 222, 179));
+		btnPause.setBounds(299, 0, 89, 23);
+		btnPause.setBorderPainted(false);
 		menuPanel.add(btnPause);
 
 		btnStop = new JButton("Stop");
+		btnStop.setBackground(new Color(245, 222, 179));
 		btnStop.setEnabled(false);
 		btnStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -195,10 +225,12 @@ public class PianoPanel extends JPanel {
 				rdbtnRecording.setSelected(false);
 			}
 		});
-		btnStop.setBounds(208, 11, 89, 23);
+		btnStop.setBounds(398, 0, 89, 23);
+		btnStop.setBorderPainted(false);
 		menuPanel.add(btnStop);
 
 		btnPlay = new JButton("Play");
+		btnPlay.setBackground(new Color(245, 222, 179));
 		btnPlay.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int x = 0;
@@ -233,24 +265,25 @@ public class PianoPanel extends JPanel {
 				}
 			}
 		});
-		btnPlay.setBounds(300, 12, 89, 23);
+		btnPlay.setBounds(497, 0, 89, 23);
+		btnPlay.setBorderPainted(false);
 		menuPanel.add(btnPlay);
 
 		JPanel pianoPanel = new JPanel();
-		pianoPanel.setBackground(Color.GRAY);
+		pianoPanel.setBackground(new Color(255, 235, 205));
 		pianoPanel.setBounds(0, 80, 800, 310);
 		container.add(pianoPanel);
 		pianoPanel.setLayout(null);
 
 		JPanel stylePanelOne = new JPanel();
-		stylePanelOne.setBackground(Color.CYAN);
+		stylePanelOne.setBackground(new Color(204, 255, 204));
 		stylePanelOne.setBounds(0, 0, 800, 15);
 		pianoPanel.add(stylePanelOne);
 		stylePanelOne.setLayout(null);
 
 		JPanel stylePanelTwo = new JPanel();
 		stylePanelTwo.setLayout(null);
-		stylePanelTwo.setBackground(Color.CYAN);
+		stylePanelTwo.setBackground(new Color(204, 255, 204));
 		stylePanelTwo.setBounds(0, 295, 800, 15);
 		pianoPanel.add(stylePanelTwo);
 
@@ -319,6 +352,7 @@ public class PianoPanel extends JPanel {
 		// White keys
 
 		JPanel whiteKey_1 = new JPanel();
+		whiteKey_1.setBorder(new LineBorder(new Color(0, 0, 0)));
 		whiteKey_1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -329,13 +363,19 @@ public class PianoPanel extends JPanel {
 				playSound(0);
 
 			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				// whiteKey_1.setBorder(new LineBorder(new Color(255, 255, 0)));
+			}
 		});
-		whiteKey_1.setBackground(Color.GREEN);
+		whiteKey_1.setBackground(new Color(255, 255, 255));
 		whiteKey_1.setBounds(0, 0, 85, 258);
 		whiteKey_1.setLayout(null);
 		PianoPanelTwo.add(whiteKey_1);
 
 		JPanel whiteKey_2 = new JPanel();
+		whiteKey_2.setBorder(new LineBorder(new Color(0, 0, 0)));
 		whiteKey_2.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -346,12 +386,13 @@ public class PianoPanel extends JPanel {
 				playSound(0);
 			}
 		});
-		whiteKey_2.setBackground(Color.ORANGE);
+		whiteKey_2.setBackground(new Color(255, 255, 255));
 		whiteKey_2.setBounds(84, 0, 85, 258);
 		PianoPanelTwo.add(whiteKey_2);
 		whiteKey_2.setLayout(null);
 
 		JPanel whiteKey_3 = new JPanel();
+		whiteKey_3.setBorder(new LineBorder(new Color(0, 0, 0)));
 		whiteKey_3.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -363,11 +404,12 @@ public class PianoPanel extends JPanel {
 			}
 		});
 		whiteKey_3.setLayout(null);
-		whiteKey_3.setBackground(Color.BLUE);
+		whiteKey_3.setBackground(new Color(255, 255, 255));
 		whiteKey_3.setBounds(169, 0, 85, 258);
 		PianoPanelTwo.add(whiteKey_3);
 
 		JPanel whiteKey_4 = new JPanel();
+		whiteKey_4.setBorder(new LineBorder(new Color(0, 0, 0)));
 		whiteKey_4.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -379,11 +421,12 @@ public class PianoPanel extends JPanel {
 			}
 		});
 		whiteKey_4.setLayout(null);
-		whiteKey_4.setBackground(Color.LIGHT_GRAY);
+		whiteKey_4.setBackground(new Color(255, 255, 255));
 		whiteKey_4.setBounds(254, 0, 85, 258);
 		PianoPanelTwo.add(whiteKey_4);
 
 		JPanel whiteKey_5 = new JPanel();
+		whiteKey_5.setBorder(new LineBorder(new Color(0, 0, 0)));
 		whiteKey_5.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -395,11 +438,12 @@ public class PianoPanel extends JPanel {
 			}
 		});
 		whiteKey_5.setLayout(null);
-		whiteKey_5.setBackground(Color.ORANGE);
+		whiteKey_5.setBackground(new Color(255, 255, 255));
 		whiteKey_5.setBounds(339, 0, 85, 258);
 		PianoPanelTwo.add(whiteKey_5);
 
 		JPanel whiteKey_6 = new JPanel();
+		whiteKey_6.setBorder(new LineBorder(new Color(0, 0, 0)));
 		whiteKey_6.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -411,11 +455,12 @@ public class PianoPanel extends JPanel {
 			}
 		});
 		whiteKey_6.setLayout(null);
-		whiteKey_6.setBackground(Color.GREEN);
+		whiteKey_6.setBackground(new Color(255, 255, 255));
 		whiteKey_6.setBounds(424, 0, 85, 258);
 		PianoPanelTwo.add(whiteKey_6);
 
 		JPanel whiteKey_7 = new JPanel();
+		whiteKey_7.setBorder(new LineBorder(new Color(0, 0, 0)));
 		whiteKey_7.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -427,29 +472,53 @@ public class PianoPanel extends JPanel {
 			}
 		});
 		whiteKey_7.setLayout(null);
-		whiteKey_7.setBackground(Color.MAGENTA);
+		whiteKey_7.setBackground(Color.WHITE);
 		whiteKey_7.setBounds(509, 0, 85, 258);
 		PianoPanelTwo.add(whiteKey_7);
 
 		// Bottom Panels
 
 		JPanel bottomPanel = new JPanel();
-
+		bottomPanel.setBackground(new Color(160, 82, 45));
 		bottomPanel.setBounds(0, 390, 800, 50);
 		container.add(bottomPanel);
 		bottomPanel.setLayout(null);
+		
+		JLabel lblNewLabel = new JLabel("");
+		lblNewLabel.setIcon(new ImageIcon("images/onLight.png"));
+		lblNewLabel.setBounds(20, 0, 100, 100);
+		bottomPanel.add(lblNewLabel);
+
 
 		txtRecording = new JTextField();
+		txtRecording.setBackground(new Color(245, 222, 179));
+		txtRecording.setEditable(false);
+		txtRecording.setFont(new Font("Tahoma", Font.BOLD, 18));
+		txtRecording.setHorizontalAlignment(SwingConstants.CENTER);
 		txtRecording.setText("Recording");
-		txtRecording.setBounds(339, 11, 86, 20);
+		txtRecording.setBounds(405, 11, 134, 28);
 		bottomPanel.add(txtRecording);
 		txtRecording.setColumns(10);
 
-		txtOnOrOff = new JTextField();
-		txtOnOrOff.setText("on or off");
-		txtOnOrOff.setBounds(245, 11, 86, 20);
-		bottomPanel.add(txtOnOrOff);
-		txtOnOrOff.setColumns(10);
+	}
+
+	class LeftAction extends AbstractAction {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			System.out.println("111");
+
+		}
+	}
+
+	public static void saveFile(String fileName) {
+
+		try {
+			FileOutputStream fileOut = new FileOutputStream(fileName);
+			fileOut.close();
+
+		} catch (IOException i) {
+			i.printStackTrace();
+		}
 
 	}
 
